@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+
 import '../models/number_trivia_model.dart';
 
 abstract class NumberTriviaRemoteDataSource {
@@ -10,4 +12,20 @@ abstract class NumberTriviaRemoteDataSource {
   ///
   /// Throws a [ServerException] for all error codes.
   Future<NumberTriviaModel> getRandomNumberTrivia();
+}
+
+class NumberTriviaRemoteDataSourceImpl implements NumberTriviaRemoteDataSource {
+  final http.Client client;
+
+  NumberTriviaRemoteDataSourceImpl({required this.client});
+
+  @override
+  Future<NumberTriviaModel> getConcreteNumberTrivia(int number) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<NumberTriviaModel> getRandomNumberTrivia() {
+    throw UnimplementedError();
+  }
 }
