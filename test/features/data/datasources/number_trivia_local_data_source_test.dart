@@ -29,7 +29,7 @@ void main() {
         'should return number trivia from shared preferences when there is one in the cache',
         () async {
       //arrange
-      when(() => mockSharedPreferences.getString(cachedNumberTrivia))
+      when(() => mockSharedPreferences.getString(any()))
           .thenReturn(fixture('trivia_cached.json'));
       //act
       final result = await dataSource.getLastNumberTrivia();
@@ -41,8 +41,7 @@ void main() {
     test('should throw a CacheException when there is not a cached value',
         () async {
       //arrange
-      when(() => mockSharedPreferences.getString(cachedNumberTrivia))
-          .thenReturn(null);
+      when(() => mockSharedPreferences.getString(any())).thenReturn(null);
       //act
       final call = dataSource.getLastNumberTrivia;
       //assert
@@ -56,7 +55,6 @@ void main() {
     test('should call SharedPreferences to cache the data', () async {
       //act
       dataSource.cacheNumberTrivia(tNumberTriviaModel);
-
       //assert
       final expectedJsonString = json.encode(tNumberTriviaModel.toJson());
       verify(() => mockSharedPreferences.setString(
