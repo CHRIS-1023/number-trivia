@@ -59,34 +59,27 @@ void main() {
         NumberTriviaModel(number: tNumber, text: 'test trivia');
     const NumberTrivia tNumberTrivia = tNumberTriviaModel;
 
-    test('should check if the device is online', () async {
-      //arrange
-      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      //act
-      repository.getConcreteNumberTrivia(tNumber);
-      //assert
-      verify(() => mockNetworkInfo.isConnected);
-    });
-
     runTestsOnline(() {
       test(
           'should return remote data when the call to the remote data source is successful',
           () async {
         //arrange
-        when(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
+        when(() => mockRemoteDataSource.getConcreteNumberTrivia(any()))
             .thenAnswer((_) async => tNumberTriviaModel);
+        when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
         //act
         final result = await repository.getConcreteNumberTrivia(tNumber);
         //assert
-        verify(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
         expect(result, equals(const Right(tNumberTrivia)));
+        verify(() => mockNetworkInfo.isConnected);
+        verify(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber));
       });
 
       test(
           'should cache the data locally  when the call to the remote data source is successful',
           () async {
         //arrange
-        when(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
+        when(() => mockRemoteDataSource.getConcreteNumberTrivia(any()))
             .thenAnswer((_) async => tNumberTriviaModel);
         //act
         await repository.getConcreteNumberTrivia(tNumber);
@@ -99,7 +92,7 @@ void main() {
           'should return server failure when the call to the remote data source is unsuccessful',
           () async {
         //arrange
-        when(() => mockRemoteDataSource.getConcreteNumberTrivia(tNumber))
+        when(() => mockRemoteDataSource.getConcreteNumberTrivia(any()))
             .thenThrow(ServerException());
         //act
         final result = await repository.getConcreteNumberTrivia(tNumber);
@@ -145,15 +138,6 @@ void main() {
         NumberTriviaModel(number: 123, text: 'test trivia');
     const NumberTrivia tNumberTrivia = tNumberTriviaModel;
 
-    test('should check if the device is online', () async {
-      //arrange
-      when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      //act
-      repository.getRandomNumberTrivia();
-      //assert
-      verify(() => mockNetworkInfo.isConnected);
-    });
-
     runTestsOnline(() {
       test(
           'should return remote data when the call to the remote data source is successful',
@@ -161,11 +145,13 @@ void main() {
         //arrange
         when(() => mockRemoteDataSource.getRandomNumberTrivia())
             .thenAnswer((_) async => tNumberTriviaModel);
+        when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
         //act
         final result = await repository.getRandomNumberTrivia();
         //assert
-        verify(() => mockRemoteDataSource.getRandomNumberTrivia());
         expect(result, equals(const Right(tNumberTrivia)));
+        verify(() => mockRemoteDataSource.getRandomNumberTrivia());
+        verify(() => mockNetworkInfo.isConnected);
       });
 
       test(
