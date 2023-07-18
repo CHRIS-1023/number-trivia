@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia.dart';
+part of 'number_trivia_bloc.dart';
 
 abstract class NumberTriviaState extends Equatable {
   const NumberTriviaState();
