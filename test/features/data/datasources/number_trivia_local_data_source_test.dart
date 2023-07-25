@@ -38,8 +38,7 @@ void main() {
       expect(result, equals(tNumberTriviaModel));
     });
 
-    test('should throw a CacheException when there is not a cached value',
-        () async {
+    test('should throw a CacheException when there is not a cached value', () {
       //arrange
       when(() => mockSharedPreferences.getString(any())).thenReturn(null);
       //act
@@ -52,7 +51,7 @@ void main() {
   group('cacheNumberTrivia', () {
     const tNumberTriviaModel =
         NumberTriviaModel(number: 1, text: 'test trivia');
-    test('should call SharedPreferences to cache the data', () async {
+    test('should call SharedPreferences to cache the data', () async* {
       //act
       dataSource.cacheNumberTrivia(tNumberTriviaModel);
       //assert
