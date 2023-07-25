@@ -16,11 +16,12 @@ class FakeUri extends Mock implements Uri {}
 void main() {
   late NumberTriviaRemoteDataSourceImpl dataSource;
   late MockHttpClient mockHttpClient;
-  late FakeUri fakeUri = FakeUri();
+  late FakeUri fakeUri;
 
   setUp(() {
     mockHttpClient = MockHttpClient();
     dataSource = NumberTriviaRemoteDataSourceImpl(client: mockHttpClient);
+    fakeUri = FakeUri();
     registerFallbackValue(fakeUri);
   });
 
@@ -87,8 +88,7 @@ void main() {
       //act
       dataSource.getRandomNumberTrivia();
       //assert
-      verify(() => mockHttpClient.get(
-          Uri.parse('http://numbersapi.com/random'),
+      verify(() => mockHttpClient.get(Uri.parse('http://numbersapi.com/random'),
           headers: {'Content-Type': 'application/json'}));
     });
 
@@ -110,8 +110,7 @@ void main() {
       //act
       final call = dataSource.getRandomNumberTrivia;
       //assert
-      expect(
-          () => call(), throwsA(const TypeMatcher<ServerException>()));
+      expect(() => call(), throwsA(const TypeMatcher<ServerException>()));
     });
   });
 }

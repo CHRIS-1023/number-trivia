@@ -12,7 +12,7 @@ void main() {
   setUp(() {
     mockDataConnectionChecker = MockDataConnectionChecker();
     networkInfoImpl =
-        NetworkInfoImpl(connectionChecker: mockDataConnectionChecker);
+        NetworkInfoImpl(mockDataConnectionChecker);
   });
 
   group('isConnected', () {
