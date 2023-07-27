@@ -11,17 +11,13 @@ import 'features/number_trivia/data/repositories/number_trivia_repository_impl.d
 import 'features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
+import 'features/number_trivia/presentation/riverpod/number_trivia_state_notifier.dart';
 
-// service locator
 final sl = GetIt.instance;
 
 Future<void> init() async {
   //! Features - NumberTrivia
-  sl.registerFactory(() => NumberTriviaBloc(
-      getConcreteNumberTrivia: sl(),
-      getRandomNumberTrivia: sl(),
-      inputConverter: sl()));
+  sl.registerLazySingleton(() => NumberTriviaStateNotifier());
 
   // Use cases
   sl.registerLazySingleton(() => GetConcreteNumberTrivia(sl()));

@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../bloc/number_trivia_bloc.dart';
 
 class TriviaControls extends StatefulWidget {
   const TriviaControls({
@@ -60,12 +57,12 @@ class _TriviaControlsState extends State<TriviaControls> {
   }
 
   void addConcrete() {
-    controller.clear();
-    context.read<NumberTriviaBloc>().add(GetTriviaForConcreteNumber(inputStr));
+    // controller.clear();
+    // context.read<NumberTriviaBloc>().add(GetTriviaForConcreteNumber(inputStr));
   }
 
   void addRandom() {
-    controller.clear();
-    context.read<NumberTriviaBloc>().add(GetTriviaForRandomNumber());
+    // controller.clear();
+    // context.read<NumberTriviaBloc>().add(GetTriviaForRandomNumber());
   }
 }
