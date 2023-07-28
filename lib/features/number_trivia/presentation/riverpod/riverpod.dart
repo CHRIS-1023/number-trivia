@@ -4,9 +4,6 @@ import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'package:number_trivia/features/number_trivia/presentation/widgets/loading_widget.dart';
-import 'package:number_trivia/features/number_trivia/presentation/widgets/message_display.dart';
-import 'package:number_trivia/features/number_trivia/presentation/widgets/trivia_display.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecase.dart';
@@ -22,12 +19,6 @@ class NumberTriviaState extends Equatable {
 
   @override
   List<Object?> get props => [];
-
-  when(
-      {required MessageDisplay Function() empty,
-      required LoadingWidget Function() loading,
-      required TriviaDisplay Function(dynamic triviaState) loaded,
-      required MessageDisplay Function(dynamic error) error}) {}
 }
 
 class Empty extends NumberTriviaState {}
