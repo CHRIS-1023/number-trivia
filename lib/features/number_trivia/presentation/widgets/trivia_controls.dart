@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../bloc/number_trivia_bloc.dart';
+import '../riverpod.dart';
 
-class TriviaControls extends StatefulWidget {
+
+class TriviaControls extends ConsumerWidget {
   const TriviaControls({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<TriviaControls> createState() => _TriviaControlsState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = TextEditingController();
+    late String inputStr;
 
-class _TriviaControlsState extends State<TriviaControls> {
-  final controller = TextEditingController();
-  late String inputStr;
-
-  @override
-  Widget build(BuildContext context) {
     return Column(
       children: [
         TextField(
@@ -31,7 +27,7 @@ class _TriviaControlsState extends State<TriviaControls> {
             inputStr = value;
           },
           onSubmitted: (_) {
-            addConcrete();
+            addConcrete(ref, inputStr);
           },
         ),
         const SizedBox(height: 10),
@@ -39,7 +35,7 @@ class _TriviaControlsState extends State<TriviaControls> {
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: addConcrete,
+                onPressed: () => addConcrete(ref, inputStr),
                 child: const Text('Search'),
               ),
             ),
@@ -49,7 +45,7 @@ class _TriviaControlsState extends State<TriviaControls> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade500,
                 ),
-                onPressed: addRandom,
+                onPressed: () => addRandom(ref),
                 child: const Text('Get random trivia'),
               ),
             ),
@@ -59,13 +55,13 @@ class _TriviaControlsState extends State<TriviaControls> {
     );
   }
 
-  void addConcrete() {
-    controller.clear();
-    context.read<NumberTriviaBloc>().add(GetTriviaForConcreteNumber(inputStr));
+  void addConcrete(WidgetRef ref, String inputStr) {
+    ref
+        .read(numberTriviaProvider.notifier)
+        .getTriviaForConcreteNumber(inputStr);
   }
 
-  void addRandom() {
-    controller.clear();
-    context.read<NumberTriviaBloc>().add(GetTriviaForRandomNumber());
+  void addRandom(WidgetRef ref) {
+    ref.read(numberTriviaProvider.notifier).getTriviaForRandomNumber();
   }
 }
