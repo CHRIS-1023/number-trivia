@@ -1,6 +1,8 @@
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:number_trivia/features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/network/network_info.dart';
@@ -11,17 +13,43 @@ import 'features/number_trivia/data/repositories/number_trivia_repository_impl.d
 import 'features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'features/number_trivia/presentation/bloc/number_trivia_bloc.dart';
+import 'features/number_trivia/presentation/riverpod/states.dart';
 
 // service locator
 final sl = GetIt.instance;
 
+final getConcreteNumberTriviaProvider =
+    Provider<GetConcreteNumberTrivia>((ref) => GetConcreteNumberTrivia(sl()));
+final getRandomNumberTriviaProvider =
+    Provider<GetRandomNumberTrivia>((ref) => GetRandomNumberTrivia(sl()));
+final inputConverterProvider =
+    Provider<InputConverter>((ref) => InputConverter());
+
+final numberTriviaStateNotifierProvider =
+    StateNotifierProvider<NumberTriviaStateNotifier, NumberTriviaState>((ref) {
+  final getConcreteNumberTrivia = ref.watch(getConcreteNumberTriviaProvider);
+  final getRandomNumberTrivia = ref.watch(getRandomNumberTriviaProvider);
+  final inputConverter = ref.watch(inputConverterProvider);
+
+  return NumberTriviaStateNotifier(
+    getConcreteNumberTrivia: getConcreteNumberTrivia,
+    getRandomNumberTrivia: getRandomNumberTrivia,
+    inputConverter: inputConverter,
+  );
+});
+
 Future<void> init() async {
-  //! Features - NumberTrivia
-  sl.registerFactory(() => NumberTriviaBloc(
-      getConcreteNumberTrivia: sl(),
-      getRandomNumberTrivia: sl(),
-      inputConverter: sl()));
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final client = http.Client();
+  final dataConnectionChecker = DataConnectionChecker();
+
+  // Register Riverpod providers
+  sl.registerLazySingleton<InputConverter>(() => InputConverter());
+  sl.registerLazySingleton<NetworkInfo>(
+      () => NetworkInfoImpl(dataConnectionChecker));
+  sl.registerLazySingleton<SharedPreferences>(() => sharedPreferences);
+  sl.registerLazySingleton<http.Client>(() => client);
+  sl.registerLazySingleton<DataConnectionChecker>(() => dataConnectionChecker);
 
   // Use cases
   sl.registerLazySingleton(() => GetConcreteNumberTrivia(sl()));
@@ -34,20 +62,10 @@ Future<void> init() async {
             localDataSource: sl(),
             networkInfo: sl(),
           ));
+
   // Data sources
   sl.registerLazySingleton<NumberTriviaRemoteDataSource>(
       () => NumberTriviaRemoteDataSourceImpl(client: sl()));
-
   sl.registerLazySingleton<NumberTriviaLocalDataSource>(
       () => NumberTriviaLocalDataSourceImpl(sharedPreferences: sl()));
-
-  //! Core
-  sl.registerLazySingleton(() => InputConverter());
-  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
-
-  //! External
-  final sharedPreferences = await SharedPreferences.getInstance();
-  sl.registerLazySingleton(() => sharedPreferences);
-  sl.registerLazySingleton(() => http.Client());
-  sl.registerLazySingleton(() => DataConnectionChecker());
 }
