@@ -12,7 +12,7 @@ import 'features/number_trivia/data/repositories/number_trivia_repository_impl.d
 import 'features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'features/number_trivia/presentation/riverpod.dart';
+import 'features/number_trivia/presentation/riverpod/riverpod.dart';
 
 // service locator
 final sl = GetIt.instance;

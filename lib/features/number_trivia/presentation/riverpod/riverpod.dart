@@ -8,9 +8,9 @@ import 'package:number_trivia/features/number_trivia/presentation/widgets/loadin
 import 'package:number_trivia/features/number_trivia/presentation/widgets/message_display.dart';
 import 'package:number_trivia/features/number_trivia/presentation/widgets/trivia_display.dart';
 
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../../../injection_container.dart';
+import '../../../../../core/error/failures.dart';
+import '../../../../../core/usecases/usecase.dart';
+import '../../../../injection_container.dart';
 
 const String serverFailureMessage = 'Server Failure';
 const String cacheFailureMessage = 'Cache Failure';
