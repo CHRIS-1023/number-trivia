@@ -1,13 +1,20 @@
+import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:number_trivia/core/util/input_converter.dart';
 import 'package:number_trivia/features/number_trivia/domain/entities/number_trivia.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'package:number_trivia/features/number_trivia/domain/usecases/get_random_number_trivia.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../../core/error/failures.dart';
 import '../../../../../core/usecases/usecase.dart';
-import '../../../../injection_container.dart';
+import '../../../../core/network/network_info.dart';
+import '../../data/datasources/number_trivia_local_data_source.dart';
+import '../../data/datasources/number_trivia_remote_data_source.dart';
+import '../../data/repositories/number_trivia_repository_impl.dart';
+import '../../domain/repositories/number_trivia_repository.dart';
 
 const String serverFailureMessage = 'Server Failure';
 const String cacheFailureMessage = 'Cache Failure';
@@ -104,9 +111,16 @@ final numberTriviaProvider =
 });
 
 final getConcreteNumberTriviaProvider =
-    Provider<GetConcreteNumberTrivia>((ref) => GetConcreteNumberTrivia(sl()));
-final getRandomNumberTriviaProvider =
-    Provider<GetRandomNumberTrivia>((ref) => GetRandomNumberTrivia(sl()));
+    Provider<GetConcreteNumberTrivia>((ref) {
+  final repository = ref.watch(numberTriviaRepositoryProvider);
+  return GetConcreteNumberTrivia(repository);
+});
+
+final getRandomNumberTriviaProvider = Provider<GetRandomNumberTrivia>((ref) {
+  final repository = ref.watch(numberTriviaRepositoryProvider);
+  return GetRandomNumberTrivia(repository);
+});
+
 final inputConverterProvider =
     Provider<InputConverter>((ref) => InputConverter());
 
@@ -120,5 +134,55 @@ final numberTriviaStateNotifierProvider =
     getConcreteNumberTrivia: getConcreteNumberTrivia,
     getRandomNumberTrivia: getRandomNumberTrivia,
     inputConverter: inputConverter,
+  );
+});
+
+final sharedPreferencesProvider =
+    FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+
+final httpClientProvider = Provider<http.Client>((ref) {
+  return http.Client();
+});
+
+final dataConnectionCheckerProvider =
+    Provider<DataConnectionChecker>((ref) => DataConnectionChecker());
+
+final networkInfoProvider = Provider<NetworkInfo>((ref) {
+  final dataConnectionChecker = ref.watch(dataConnectionCheckerProvider);
+  return NetworkInfoImpl(dataConnectionChecker);
+});
+
+final numberTriviaRemoteDataSourceProvider =
+    Provider<NumberTriviaRemoteDataSource>((ref) {
+  final httpClient = ref.watch(httpClientProvider);
+  return NumberTriviaRemoteDataSourceImpl(client: httpClient);
+});
+
+final numberTriviaLocalDataSourceProvider =
+    Provider<NumberTriviaLocalDataSource>((ref) {
+  final sharedPreferences = ref.watch(sharedPreferencesProvider);
+  return sharedPreferences.when(
+    data: (value) {
+      return NumberTriviaLocalDataSourceImpl(sharedPreferences: value);
+    },
+    loading: () {
+      throw Exception("Shared Preferences is still loading");
+    },
+    error: (error, stackTrace) {
+      throw Exception("Error fetching Shared Preferences: $error");
+    },
+  );
+});
+
+final numberTriviaRepositoryProvider = Provider<NumberTriviaRepository>((ref) {
+  final remoteDataSource = ref.watch(numberTriviaRemoteDataSourceProvider);
+  final localDataSource = ref.watch(numberTriviaLocalDataSourceProvider);
+  final networkInfo = ref.watch(networkInfoProvider);
+  return NumberTriviaRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    localDataSource: localDataSource,
+    networkInfo: networkInfo,
   );
 });

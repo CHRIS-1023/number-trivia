@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:number_trivia/features/number_trivia/presentation/controllers/riverpod.dart';
 import 'package:number_trivia/features/number_trivia/presentation/pages/number_trivia_page.dart';
-
-import 'injection_container.dart' as di;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await di.init();
-  runApp(const ProviderScope(child: MyApp()));
+
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  runApp(ProviderScope(overrides: [
+    sharedPreferencesProvider.overrideWith((ref) => sharedPreferences)
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
