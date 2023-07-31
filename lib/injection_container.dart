@@ -1,5 +1,4 @@
 import 'package:data_connection_checker_nulls/data_connection_checker_nulls.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,30 +11,9 @@ import 'features/number_trivia/data/repositories/number_trivia_repository_impl.d
 import 'features/number_trivia/domain/repositories/number_trivia_repository.dart';
 import 'features/number_trivia/domain/usecases/get_concrete_number_trivia.dart';
 import 'features/number_trivia/domain/usecases/get_random_number_trivia.dart';
-import 'features/number_trivia/presentation/riverpod/riverpod.dart';
 
 // service locator
 final sl = GetIt.instance;
-
-final getConcreteNumberTriviaProvider =
-    Provider<GetConcreteNumberTrivia>((ref) => GetConcreteNumberTrivia(sl()));
-final getRandomNumberTriviaProvider =
-    Provider<GetRandomNumberTrivia>((ref) => GetRandomNumberTrivia(sl()));
-final inputConverterProvider =
-    Provider<InputConverter>((ref) => InputConverter());
-
-final numberTriviaStateNotifierProvider =
-    StateNotifierProvider<NumberTriviaNotifier, NumberTriviaState>((ref) {
-  final getConcreteNumberTrivia = ref.watch(getConcreteNumberTriviaProvider);
-  final getRandomNumberTrivia = ref.watch(getRandomNumberTriviaProvider);
-  final inputConverter = ref.watch(inputConverterProvider);
-
-  return NumberTriviaNotifier(
-    getConcreteNumberTrivia: getConcreteNumberTrivia,
-    getRandomNumberTrivia: getRandomNumberTrivia,
-    inputConverter: inputConverter,
-  );
-});
 
 Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();

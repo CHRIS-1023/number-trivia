@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../riverpod/riverpod.dart';
+import '../controllers/riverpod.dart';
 import '../widgets/widgets.dart';
 
 class NumberTriviaPage extends ConsumerWidget {
@@ -11,7 +11,9 @@ class NumberTriviaPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Number Trivia'),
+        elevation: 0,
+        title: const Text('NUMBER TRIVIA'),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -25,7 +27,8 @@ class NumberTriviaPage extends ConsumerWidget {
                     final state = ref.watch(numberTriviaProvider);
 
                     if (state is Empty) {
-                      return const MessageDisplay(message: 'Start searching');
+                      return const MessageDisplay(
+                          message: 'Start searching...');
                     } else if (state is Loading) {
                       return const LoadingWidget();
                     } else if (state is Loaded) {

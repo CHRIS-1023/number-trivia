@@ -102,3 +102,23 @@ final numberTriviaProvider =
     inputConverter: inputConverter,
   );
 });
+
+final getConcreteNumberTriviaProvider =
+    Provider<GetConcreteNumberTrivia>((ref) => GetConcreteNumberTrivia(sl()));
+final getRandomNumberTriviaProvider =
+    Provider<GetRandomNumberTrivia>((ref) => GetRandomNumberTrivia(sl()));
+final inputConverterProvider =
+    Provider<InputConverter>((ref) => InputConverter());
+
+final numberTriviaStateNotifierProvider =
+    StateNotifierProvider<NumberTriviaNotifier, NumberTriviaState>((ref) {
+  final getConcreteNumberTrivia = ref.watch(getConcreteNumberTriviaProvider);
+  final getRandomNumberTrivia = ref.watch(getRandomNumberTriviaProvider);
+  final inputConverter = ref.watch(inputConverterProvider);
+
+  return NumberTriviaNotifier(
+    getConcreteNumberTrivia: getConcreteNumberTrivia,
+    getRandomNumberTrivia: getRandomNumberTrivia,
+    inputConverter: inputConverter,
+  );
+});
